@@ -1,44 +1,56 @@
 group 'com.example.imagegallerysaver'
 version '1.0-SNAPSHOT'
 
-buildscript {
-    ext.kotlin_version = '1.7.10'
+allprojects {
     repositories {
         google()
         mavenCentral()
     }
 
-    dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+}
+rootProject.buildDir = '../build'
+
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+    afterEvaluate {
+        // check if android block is available
+
+        if (it.hasProperty('android')) {
+
+            if (it.android.namespace == null) {
+                def manifest = new XmlSlurper().parse(file(it.android.sourceSets.main.manifest.srcFile))
+                def packageName = manifest.@package.text()
+                android.namespace = packageName
+            }
+
+            def javaVersion = JavaVersion.VERSION_17
+            android {
+                def androidApiVersion = 35
+                compileSdkVersion androidApiVersion
+                defaultConfig {
+                    targetSdkVersion androidApiVersion
+                    multiDexEnabled true
+                }
+                compileOptions {
+                    sourceCompatibility javaVersion
+                    targetCompatibility javaVersion
+
+                }
+                tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+                    kotlinOptions {
+                        jvmTarget = javaVersion.toString()
+                    }
+                }
+            }
+        }
+
     }
+
+}
+subprojects {
+    project.evaluationDependsOn(':app')
 }
 
-rootProject.allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-
-android {
-    compileSdkVersion 30
-
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-    }
-    defaultConfig {
-        minSdkVersion 16
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-    lintOptions {
-        disable 'InvalidPackage'
-    }
-}
-
-dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
 }

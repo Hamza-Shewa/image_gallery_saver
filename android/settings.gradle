@@ -1,1 +1,15 @@
-rootProject.name = 'image_gallery_saver'
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+plugins {
+    id "com.android.application" version "8.3.1" apply false
+    id "org.jetbrains.kotlin.android" version "2.1.10" apply false
+}
+
+include ":app"
+project(":app").projectDir = file("modules/image_gallery_saver")
