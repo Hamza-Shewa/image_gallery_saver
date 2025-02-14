@@ -14,7 +14,7 @@ subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
 subprojects {
-    project.evaluationDependsOn(':app')
+    project.evaluationDependsOn(':image_gallery_saver')
 }
 
 tasks.register("clean", Delete) {

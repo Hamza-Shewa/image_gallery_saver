@@ -11,5 +11,5 @@ plugins {
     id "org.jetbrains.kotlin.android" version "2.1.10" apply false
 }
 
-include ":app"
-project(":app").projectDir = file("modules/image_gallery_saver")
+include ":image_gallery_saver"
+project(":image_gallery_saver").projectDir = file("../image_gallery_saver")
